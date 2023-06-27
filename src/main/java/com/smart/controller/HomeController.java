@@ -42,7 +42,7 @@ public class HomeController {
 		return "signup";
 	}
 	@PostMapping("/do_register")
-	public String registerUser(@Valid @ModelAttribute("user") User user,BindingResult result1, @RequestParam(value="agreement",defaultValue="false") Boolean agreement, Model m)
+	public String registerUser(@Valid @ModelAttribute("user") User user ,BindingResult result1, HttpSession session, @RequestParam(value="agreement",defaultValue="false") Boolean agreement, Model m)
 	{
 		try {
 			if(!agreement)
@@ -56,19 +56,22 @@ public class HomeController {
 			}
 			user.setRole("ROLE_USER");
 			user.setEnabled(true);
+			user.setImageUrl("default.png");
 			
 			System.out.println("Agreement= "+agreement);
 			System.out.println("User="+user);
+			
 			User result = this.userRepository.save(user);
 			m.addAttribute("user",new User());
-			//session.setAttribute("message", new Message("Successfully Registered ", "alert-success"));
-			return "signup";
+			session.setAttribute("message", new Message("Successfully Registered ", "alert-success"));
+			return "redirect:/signup";
+			
 		}catch(Exception e)
 		{
 			e.printStackTrace();
 			m.addAttribute("user",user);
-			//session.setAttribute("message", new Message("Something went wrong"+e.getMessage(), "alert-danger"));
-			return "signup";
+			session.setAttribute("message", new Message("Something went wrong"+e.getMessage(), "alert-danger"));
+			return "redirect:/signup";
 		}		
 	}
 	
